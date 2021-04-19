@@ -1,4 +1,5 @@
 #include <ao/ao.h>
+#include <stdio.h>
 #include <mpg123.h>
 
 #define BITS 8
@@ -43,8 +44,10 @@ int main(int argc, char *argv[])
 
     /* decode and play */
     while (mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
+    {
+        printf("buffer size: %d\n", buffer_size);
         ao_play(dev, buffer, done);
-
+	}
     /* clean up */
     free(buffer);
     ao_close(dev);
