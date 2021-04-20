@@ -8,13 +8,19 @@
 
 
 
-int main()
+int main(int argc, char** argv)
 {
 	struct http_response* resp;
+	if(argv[1] == NULL)
+	{
+		printf("Enter URL\n");
+		exit(0);
+	}
+	resp = http_get(argv[1], NULL);
 	
-	resp = http_get("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
-	printf("headers: %s\n", resp->response_headers);
-	printf("body: %s\n", resp->body);
+	fprintf(stderr, "Response headers: \n%s\n\n", resp->response_headers);
+	fprintf(stderr, "---- print reponse body--------\n");
+	printf("%s", resp->body);
 	
 	return 0;
 }
