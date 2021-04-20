@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <ctype.h>
 #ifdef _WIN32
 	#include <winsock2.h>
@@ -47,8 +48,8 @@
 #endif
 
 #include <errno.h>
-#include "stringx.h";
-#include "urlparser.h";
+#include "stringx.h"
+#include "urlparser.h"
 
 /*
 	Prototype functions
@@ -154,46 +155,14 @@ struct http_response* handle_redirect_post(struct http_response* hresp, char* cu
 /*
 	Makes a HTTP request and returns the response
 */
-void print_data(const char* response)
-{
-	struct http_response *hresp = (struct http_response*)malloc(sizeof(struct http_response));
-	if(hresp == NULL)
-	{
-		printf("Unable to allocate memory for htmlcontent.");
-		return NULL;
-	}
-	hresp->body = NULL;
-	hresp->request_headers = NULL;
-	hresp->response_headers = NULL;
-	hresp->status_code = NULL;
-	hresp->status_text = NULL;
 
-	char *status_line = get_until(response, "\r\n");
-	status_line = str_replace("HTTP/1.1 ", "", status_line);
-	char *status_code = str_ndup(status_line, 4);
-	status_code = str_replace(" ", "", status_code);
-	char *status_text = str_replace(status_code, "", status_line);
-	status_text = str_replace(" ", "", status_text);
-	hresp->status_code = status_code;
-	hresp->status_code_int = atoi(status_code);
-	hresp->status_text = status_text;
-	
-	/* Parse response headers */
-	char *headers = get_until(response, "\r\n\r\n");
-	hresp->response_headers = headers;
-
-	/* Parse body */
-	char *body = strstr(response, "\r\n\r\n");
-	body = str_replace("\r\n\r\n", "", body);
-	hresp->body = body;
-
-	printf("%s\n", hresp->body);
-	
-	free(hresp);
-}
 
 struct http_response* http_req(char *http_headers, struct parsed_url *purl)
 {
+	/* DEBUG: PRINT HEADERS */
+	printf("HEADERS: %s\n", http_headers);
+	
+	/* END DEBUG */
 	/* Parse url */
 	if(purl == NULL)
 	{
@@ -334,6 +303,12 @@ struct http_response* http_get(char *url, char *custom_headers)
 {
 	/* Parse url */
 	struct parsed_url *purl = parse_url(url);
+	
+	/* DEBUG */
+	
+	printf("host: %s\nip: %s\nport: %s\npath: %s\n", purl->host, purl->ip, purl->port, purl->path);
+	
+	/* END DEBUG*/
 	if(purl == NULL)
 	{
 		printf("Unable to parse url");
