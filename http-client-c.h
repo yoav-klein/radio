@@ -242,7 +242,7 @@ struct http_response* http_req(char *http_headers, struct parsed_url *purl)
 	{	
 		BUF[recived_len] = '\0';
 		response = (char*)realloc(response, strlen(response) + strlen(BUF) + 1);
-		/*sprintf(response, "%s%s", response, BUF);*/
+		sprintf(response, "%s%s", response, BUF);
 		printf("%s", BUF);
 		fprintf(stderr, "Read: %li\n", recived_len);
 	}
@@ -340,7 +340,7 @@ struct http_response* http_get(char *url, char *custom_headers)
 		}
 		else
 		{
-			sprintf(http_headers, "GET / HTTP/1.1\r\nHost:%s\r\nConnection:close\r\n", purl->host);
+			sprintf(http_headers, "GET / HTTP/1.1\r\nHost:%s\r\nConnection:close\r\n", purl->host); /*Connection:close\r\n*/
 		}
 	}
 

@@ -16,11 +16,11 @@ int main(int argc, char** argv)
 		printf("Enter URL\n");
 		exit(0);
 	}
-	resp = http_get(argv[1], NULL);
+	resp = http_get(argv[1], "Accept: */*\r\n");
 	
 	fprintf(stderr, "Response headers: \n%s\n\n", resp->response_headers);
 	fprintf(stderr, "---- print reponse body--------\n");
-	printf("%s", resp->body);
+	/*printf("%s", resp->body);*/
 	
 	return 0;
 }

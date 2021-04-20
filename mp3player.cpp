@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     /* decode and play */
     while (mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
     {
-        printf("buffer size: %d\n", buffer_size);
+        printf("buffer size: %li\n", buffer_size);
         ao_play(dev, buffer, done);
 	}
     /* clean up */

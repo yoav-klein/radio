@@ -7,3 +7,7 @@ mp3player.out: mp3player.cpp
 
 http-client.out: client.c http-client-c.h
 	$(CC) $^ -o $@ 
+	
+	
+clean:
+	rm *.out *.mp3 *.hex
