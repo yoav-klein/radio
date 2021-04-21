@@ -240,10 +240,16 @@ struct http_response* http_req(char *http_headers, struct parsed_url *purl)
 	
 	while((recived_len = recv(sock, BUF, BUFSIZ-1, 0)) > 0)
 	{	
+		int written_bytes = 0;
 		BUF[recived_len] = '\0';
 		response = (char*)realloc(response, strlen(response) + strlen(BUF) + 1);
-		sprintf(response, "%s%s", response, BUF);
-		printf("%s", BUF);
+		/*sprintf(response, "%s%s", response, BUF);*/
+		
+		while(written_bytes < recived_len)
+		{
+			written_bytes += write(1, (BUF + written_bytes), (recived_len - written_bytes));
+			
+		}
 		fprintf(stderr, "Read: %li\n", recived_len);
 	}
 	if (recived_len < 0)
