@@ -13,5 +13,12 @@ http-client.out: client.c http-client-c.h
 	
 parse.out: parse.c
 	$(CC) -o $@ $^
+
+
+.PHONY: clean
 clean:
 	rm *.out *.mp3 *.hex
+	
+.PHONY: clean-streams
+clean-streams:
+	rm *.mp3
