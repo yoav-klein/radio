@@ -8,8 +8,8 @@ HTTP-OBJS=http-client/objs/http-client.o http-client/objs/utils.o
 all: http-client mp3player.out parse.out
 
 
-mp3player.out: mp3player.cpp
-	$(CXX) -g -I$(INCLUDE) $^ $(HTTP-OBJS) -lmpg123 -lao -o $@
+mp3player.out: mp3player.c
+	$(CC) -g -I$(INCLUDE) $^ $(HTTP-OBJS) -lmad -lpulse -lpulse-simple -o $@
 
 .PHONY: http-client
 

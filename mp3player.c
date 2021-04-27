@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
     }
 
     // Let kernel do all the dirty job of buffering etc, map file contents to memory
-    char *input_stream = mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    char *input_stream = (char*)mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
 
     // Copy pointer and length to mad_stream struct
     mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);

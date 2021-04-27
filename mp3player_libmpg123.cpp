@@ -15,6 +15,10 @@ extern "C"
 }
 #define BITS 8
 
+
+
+
+
 int main(int argc, char *argv[])
 {
     mpg123_handle *mh;
