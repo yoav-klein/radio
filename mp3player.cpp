@@ -2,6 +2,13 @@
 #include <stdio.h>
 #include <mpg123.h>
 
+
+#include <unistd.h> // read
+#include <sys/types.h> /* open */
+#include <sys/stat.h> /* open */
+#include <fcntl.h> /* open */
+
+
 extern "C"
 {
 #include "http-client.h" /* open_connection */
@@ -22,10 +29,7 @@ int main(int argc, char *argv[])
     ao_sample_format format;
     int channels, encoding;
     long rate;
-
-    if(argc < 2)
-        exit(0);
-
+    
     /* initializations */
     ao_initialize();
     driver = ao_default_driver_id();
@@ -49,27 +53,47 @@ int main(int argc, char *argv[])
     dev = ao_open_live(driver, &format, NULL);
 
 	
-	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
+	/*struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
 	struct chunk chunk = { 0 };
+	*/
 	
-	
+	int fd = open("/home/yoav/playground/radio/curl_stream.mp3", 0, O_RDONLY);
+	if(-1 == fd)
+	{
+		perror("open");
+		
+		exit(1);
+	}
+	#define BUFSIZE 700000
+	unsigned char* buf = (unsigned char*)malloc(BUFSIZE);
+	if(NULL == buf)
+	{
+		perror("malloc");
+		exit(1);
+	}
+	int read_bytes = 0;
+	while(read_bytes < BUFSIZE)
+	{
+		int n = read(fd, buf + read_bytes, BUFSIZE - read_bytes);
+		read_bytes += n;
+	}
+	int status = mpg123_feed(mh, (const unsigned char*)buf/*chunk.data*/, BUFSIZE);
+  	if(status != MPG123_OK)
+  	{
+ 	 	printf("ERROR in mpg123_feed\n");
+ 	 	exit(1);
+  	}
     /* decode and play */
     while (1)
     {
-    		char *fake = NULL;
+    		 
     	  fprintf(stderr, "LOOP\n");
-    	  chunk = read_chunk(handle->sock);
-	  fprintf(stderr, "chunk size: %ld\n", chunk.size);
+    	  //chunk = read_chunk(handle->sock);
+	  //fprintf(stderr, "chunk size: %ld\n", chunk.size);
 	  
-	  int status = mpg123_feed(mh, (const unsigned char*)chunk.data, chunk.size);
-	  if(status != MPG123_OK)
-	  {
-	  	printf("ERROR in mpg123_feed\n");
-	  	exit(1);
-	  }
     	  if(mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
     	  {
-         printf("buffer size: %li\n", buffer_size);
+         printf("Playing.. buffer: %p\n", buffer);
          ao_play(dev, buffer, done);
 	  }
 	}
