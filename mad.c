@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     }
 
     // Set up PulseAudio 16-bit 44.1kHz stereo output
-    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2 };
+    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 48000, .channels = 2 };
     if (!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
         printf("pa_simple_new() failed\n");
         return 255;
