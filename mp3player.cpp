@@ -53,18 +53,21 @@ int main(int argc, char *argv[])
     dev = ao_open_live(driver, &format, NULL);
 
 	
-	/*struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
+	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
 	struct chunk chunk = { 0 };
-	*/
 	
-	int fd = open("/home/yoav/playground/radio/curl_stream.mp3", 0, O_RDONLY);
+	
+	/************************/
+	// read from file into buffer
+	/**************************/
+	/*int fd = open("/home/yoav/playground/radio/curl_stream.mp3", 0, O_RDONLY);
 	if(-1 == fd)
 	{
 		perror("open");
 		
 		exit(1);
 	}
-	#define BUFSIZE 700000
+	#define BUFSIZE 800000
 	unsigned char* buf = (unsigned char*)malloc(BUFSIZE);
 	if(NULL == buf)
 	{
@@ -77,25 +80,39 @@ int main(int argc, char *argv[])
 		int n = read(fd, buf + read_bytes, BUFSIZE - read_bytes);
 		read_bytes += n;
 	}
-	int status = mpg123_feed(mh, (const unsigned char*)buf/*chunk.data*/, BUFSIZE);
+	int status = mpg123_feed(mh, (const unsigned char*)buf/*chunk.data*//*, BUFSIZE);
   	if(status != MPG123_OK)
   	{
  	 	printf("ERROR in mpg123_feed\n");
  	 	exit(1);
   	}
+  	*/
+  	/*********************************/
+  	
+  	
+  	printf("START LOOP\n");
     /* decode and play */
+    std::size_t count = 0;
     while (1)
     {
     		 
-    	  fprintf(stderr, "LOOP\n");
-    	  //chunk = read_chunk(handle->sock);
-	  //fprintf(stderr, "chunk size: %ld\n", chunk.size);
-	  
-    	  if(mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
-    	  {
-         printf("Playing.. buffer: %p\n", buffer);
-         ao_play(dev, buffer, done);
-	  }
+	    	chunk = read_chunk(handle->sock); // chunk has a member data that contains MP3 data
+	   	int status = mpg123_feed(mh, (const unsigned char*)chunk.data, chunk.size); 
+	   	if(MPG123_OK != status)
+		{
+		  mpg123_strerror(mh);
+		}
+		status = mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done);
+		if(MPG123_OK == status)
+		{
+		  printf("Playing.. %lu buffer: %p\n", count++, buffer);
+		 ao_play(dev, buffer, done);
+		}
+		else
+		{
+		  mpg123_strerror(mh);
+		}
+		
 	}
     /* clean up */
     free(buffer);
