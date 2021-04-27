@@ -1,13 +1,15 @@
 
 CC=gcc
 CXX=g++
+INCLUDE=http-client/include
+HTTP-OBJS=http-client/objs/http-client.o http-client/objs/utils.o
 
 
 all: http-client mp3player.out parse.out
 
 
 mp3player.out: mp3player.cpp
-	$(CXX) $^ -lmpg123 -lao -o $@
+	$(CXX) -g -I$(INCLUDE) $^ $(HTTP-OBJS) -lmpg123 -lao -o $@
 
 .PHONY: http-client
 

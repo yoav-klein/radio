@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <mpg123.h>
 
+extern "C"
+{
+#include "http-client.h" /* open_connection */
+}
 #define BITS 8
 
 int main(int argc, char *argv[])
@@ -31,7 +35,9 @@ int main(int argc, char *argv[])
     buffer = (char*) malloc(buffer_size * sizeof(unsigned char));
 
     /* open the file and get the decoding format */
-    mpg123_open(mh, argv[1]);
+    /*mpg123_open(mh, argv[1]);*/
+    mpg123_open_feed(mh);
+    
     mpg123_getformat(mh, &rate, &channels, &encoding);
 
     /* set the output format and open the output device */
@@ -42,11 +48,30 @@ int main(int argc, char *argv[])
     format.matrix = 0;
     dev = ao_open_live(driver, &format, NULL);
 
+	
+	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
+	struct chunk chunk = { 0 };
+	
+	
     /* decode and play */
-    while (mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
+    while (1)
     {
-        printf("buffer size: %li\n", buffer_size);
-        ao_play(dev, buffer, done);
+    		char *fake = NULL;
+    	  fprintf(stderr, "LOOP\n");
+    	  chunk = read_chunk(handle->sock);
+	  fprintf(stderr, "chunk size: %ld\n", chunk.size);
+	  
+	  int status = mpg123_feed(mh, (const unsigned char*)chunk.data, chunk.size);
+	  if(status != MPG123_OK)
+	  {
+	  	printf("ERROR in mpg123_feed\n");
+	  	exit(1);
+	  }
+    	  if(mpg123_read(mh, (unsigned char*)buffer, buffer_size, &done) == MPG123_OK)
+    	  {
+         printf("buffer size: %li\n", buffer_size);
+         ao_play(dev, buffer, done);
+	  }
 	}
     /* clean up */
     free(buffer);
