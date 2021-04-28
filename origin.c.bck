@@ -8,8 +8,6 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
-#include "http-client.h" // http connection
-
 pa_simple *device = NULL;
 int ret = 1;
 int error;
@@ -21,13 +19,13 @@ void output(struct mad_header const *header, struct mad_pcm *pcm);
 
 int main(int argc, char **argv) {
     // Parse command-line arguments
-   /* if (argc != 2) {
+    if (argc != 2) {
         fprintf(stderr, "Usage: %s [filename.mp3]", argv[0]);
         return 255;
-    }*/
+    }
 
     // Set up PulseAudio 16-bit 44.1kHz stereo output
-    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 48000, .channels = 2 };
+    static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 44100, .channels = 2 };
     if (!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
         printf("pa_simple_new() failed\n");
         return 255;
@@ -38,7 +36,7 @@ int main(int argc, char **argv) {
     mad_synth_init(&mad_synth);
     mad_frame_init(&mad_frame);
 
-    /*// Filename pointer
+    // Filename pointer
     char *filename = argv[1];
 
     // File pointer
@@ -56,78 +54,19 @@ int main(int argc, char **argv) {
     }
 
     // Let kernel do all the dirty job of buffering etc, map file contents to memory
-    char *input_stream = (char*)mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    char *input_stream = mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
 
     // Copy pointer and length to mad_stream struct
     mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
 
-	*/
-	
-	
-	
-	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
-	struct chunk chunk = { 0 };
-	
-	unsigned char *last = NULL;
     // Decode frame and synthesize loop
-    chunk = read_chunk(handle->sock);
-    printf("chunk size: %ld\n", chunk.size);
-    mad_stream_buffer(&mad_stream, chunk.data, chunk.size);
-    
     while (1) {
-		#define FRAME_SIZE (384)
-		size_t unused = mad_stream.bufend - mad_stream.this_frame;
-		printf("loop: unused: %lu\n", unused);
-		if(unused <= (FRAME_SIZE * 2))
-		{
-			printf("SMALLER: unused: %lu\n", unused);
-			unsigned char tmp[FRAME_SIZE * 2] = { 0 };
-			//printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
-			if(unused > 0)
-			{
-				//printf("Copying to tmp: %p\n", mad_stream.this_frame);
-				memcpy(tmp, mad_stream.this_frame, unused);
-				
-			//	printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
-			}
-			printf("last in tmp - tmp[unused]: %x\n", tmp[unused - 1]);
-			
-			free(chunk.data);
-			chunk = read_chunk(handle->sock);	
-			chunk.data = realloc(chunk.data, chunk.size + unused);
-			printf("chunk.data[0]: %x\n", ((unsigned char*)chunk.data)[0]);
-			if(NULL == chunk.data)
-			{
-				perror("realloc");
-			}
-			
-			if(unused > 0)
-			{
-				//printf("before move - chunk.data: %x %x %x %X\n", chunk.data[0], chunk.data[1], chunk.data[2], chunk.data[3]);
-				memmove(chunk.data + unused, chunk.data, chunk.size);
-				
-				memcpy(chunk.data, tmp, unused);
-				//printf("after copy - chunk.data: %x %x %x %x\n", ((unsigned char*)chunk.data)[0], chunk.data[1], chunk.data[2], chunk.data[3]);
-			}
-			printf("new buffer: chunk.data[unused - 1]: %x, chunk.data[unused]: %x\n", ((unsigned char*)chunk.data)[unused - 1], ((unsigned char*)chunk.data)[unused]);
-			mad_stream_buffer(&mad_stream, chunk.data, chunk.size + unused);
-			
-		}
-		//printf("this_frame: %p\n", mad_stream.this_frame);
-		//printf("bufend: %p\n", mad_stream.bufend);
+
         // Decode frame from the stream
-        int written_bytes = 0;
-        /*while(written_bytes < FRAME_SIZE)
-        {
-        	//written_bytes = write(1, mad_stream.this_frame + written_bytes, FRAME_SIZE - written_bytes);
-        }*/
         if (mad_frame_decode(&mad_frame, &mad_stream)) {
-        	printf("*********ERROR***********\n");
-            printf("%s\n", mad_stream_errorstr(&mad_stream));
             if (MAD_RECOVERABLE(mad_stream.error)) {
                 continue;
             } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
-            	//printf("MAD_ERROR_BUFLEN\n");
                 continue;
             } else {
                 break;
@@ -139,7 +78,7 @@ int main(int argc, char **argv) {
     }
 
     // Close
-   // fclose(fp);
+    fclose(fp);
 
     // Free MAD structs
     mad_synth_finish(&mad_synth);
