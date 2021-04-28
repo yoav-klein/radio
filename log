@@ -1,0 +1,100 @@
+Next frame: 0x564d11988d90,  last: 0x564d11988d90, diff: 0
+Next frame: 0x564d11988f10,  last: 0x564d11988d90, diff: 384
+Next frame: 0x564d11989090,  last: 0x564d11988d90, diff: 768
+Next frame: 0x564d11989210,  last: 0x564d11988d90, diff: 1152
+Next frame: 0x564d11989390,  last: 0x564d11988d90, diff: 1536
+Next frame: 0x564d11989510,  last: 0x564d11988d90, diff: 1920
+Next frame: 0x564d11989690,  last: 0x564d11988d90, diff: 2304
+Next frame: 0x564d11989810,  last: 0x564d11988d90, diff: 2688
+Next frame: 0x564d11989990,  last: 0x564d11988d90, diff: 3072
+Next frame: 0x564d11989b10,  last: 0x564d11988d90, diff: 3456
+Next frame: 0x564d11989c90,  last: 0x564d11988d90, diff: 3840
+Next frame: 0x564d11989e10,  last: 0x564d11988d90, diff: 4224
+Next frame: 0x564d11989f90,  last: 0x564d11988d90, diff: 4608
+Next frame: 0x564d1198a110,  last: 0x564d11988d90, diff: 4992
+Next frame: 0x564d1198a290,  last: 0x564d11988d90, diff: 5376
+Next frame: 0x564d1198a410,  last: 0x564d11988d90, diff: 5760
+Next frame: 0x564d1198a590,  last: 0x564d11988d90, diff: 6144
+Next frame: 0x564d1198a710,  last: 0x564d11988d90, diff: 6528
+Next frame: 0x564d1198a890,  last: 0x564d11988d90, diff: 6912
+Next frame: 0x564d1198aa10,  last: 0x564d11988d90, diff: 7296
+Next frame: 0x564d1198ab90,  last: 0x564d11988d90, diff: 7680
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d1198ab90, diff: 11968
+Reading from socket
+chunk size: 4096
+Next frame: 0x564d11988db0,  last: 0x564d1198da50, diff: 18446744073709532000
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d11988db0, diff: 19616
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d1198da50, diff: 0
+Next frame: 0x564d1198da51,  last: 0x564d1198da50, diff: 1
+Next frame: 0x564d1198da8e,  last: 0x564d1198da50, diff: 62
+Next frame: 0x564d1198dc8f,  last: 0x564d1198da50, diff: 575
+Next frame: 0x564d1198de0f,  last: 0x564d1198da50, diff: 959
+Next frame: 0x564d1198df8f,  last: 0x564d1198da50, diff: 1343
+Next frame: 0x564d1198e10f,  last: 0x564d1198da50, diff: 1727
+Next frame: 0x564d1198e28f,  last: 0x564d1198da50, diff: 2111
+Next frame: 0x564d1198e40f,  last: 0x564d1198da50, diff: 2495
+Next frame: 0x564d1198e58f,  last: 0x564d1198da50, diff: 2879
+Next frame: 0x564d1198e70f,  last: 0x564d1198da50, diff: 3263
+Next frame: 0x564d1198e88f,  last: 0x564d1198da50, diff: 3647
+Next frame: 0x564d1198ea0f,  last: 0x564d1198da50, diff: 4031
+Next frame: 0x564d1198eb8f,  last: 0x564d1198da50, diff: 4415
+Next frame: 0x564d1198ed0f,  last: 0x564d1198da50, diff: 4799
+Next frame: 0x564d1198ee8f,  last: 0x564d1198da50, diff: 5183
+Next frame: 0x564d1198f00f,  last: 0x564d1198da50, diff: 5567
+Next frame: 0x564d1198f18f,  last: 0x564d1198da50, diff: 5951
+Next frame: 0x564d1198f30f,  last: 0x564d1198da50, diff: 6335
+Next frame: 0x564d1198f48f,  last: 0x564d1198da50, diff: 6719
+Next frame: 0x564d1198f60f,  last: 0x564d1198da50, diff: 7103
+Next frame: 0x564d1198f78f,  last: 0x564d1198da50, diff: 7487
+Next frame: 0x564d1198f90f,  last: 0x564d1198da50, diff: 7871
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d1198f90f, diff: 18446744073709543745
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d1198da50, diff: 0
+Next frame: 0x564d1198da51,  last: 0x564d1198da50, diff: 1
+Next frame: 0x564d1198dd0f,  last: 0x564d1198da50, diff: 703
+Next frame: 0x564d1198de8f,  last: 0x564d1198da50, diff: 1087
+Next frame: 0x564d1198e00f,  last: 0x564d1198da50, diff: 1471
+Next frame: 0x564d1198e18f,  last: 0x564d1198da50, diff: 1855
+Next frame: 0x564d1198e30f,  last: 0x564d1198da50, diff: 2239
+Next frame: 0x564d1198e48f,  last: 0x564d1198da50, diff: 2623
+Next frame: 0x564d1198e60f,  last: 0x564d1198da50, diff: 3007
+Next frame: 0x564d1198e78f,  last: 0x564d1198da50, diff: 3391
+Next frame: 0x564d1198e90f,  last: 0x564d1198da50, diff: 3775
+Next frame: 0x564d1198ea8f,  last: 0x564d1198da50, diff: 4159
+Next frame: 0x564d1198ec0f,  last: 0x564d1198da50, diff: 4543
+Next frame: 0x564d1198ed8f,  last: 0x564d1198da50, diff: 4927
+Next frame: 0x564d1198ef0f,  last: 0x564d1198da50, diff: 5311
+Next frame: 0x564d1198f08f,  last: 0x564d1198da50, diff: 5695
+Next frame: 0x564d1198f20f,  last: 0x564d1198da50, diff: 6079
+Next frame: 0x564d1198f38f,  last: 0x564d1198da50, diff: 6463
+Next frame: 0x564d1198f50f,  last: 0x564d1198da50, diff: 6847
+Next frame: 0x564d1198f68f,  last: 0x564d1198da50, diff: 7231
+Next frame: 0x564d1198f80f,  last: 0x564d1198da50, diff: 7615
+Next frame: 0x564d1198f98f,  last: 0x564d1198da50, diff: 7999
+Reading from socket
+chunk size: 4096
+Next frame: 0x564d11988db0,  last: 0x564d1198f98f, diff: 18446744073709524001
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d11988db0, diff: 19616
+Reading from socket
+chunk size: 8192
+Next frame: 0x564d1198da50,  last: 0x564d1198da50, diff: 0
+Next frame: 0x564d1198da51,  last: 0x564d1198da50, diff: 1
+Next frame: 0x564d1198da8c,  last: 0x564d1198da50, diff: 60
+Next frame: 0x564d1198dadc,  last: 0x564d1198da50, diff: 140
+Next frame: 0x564d1198dadd,  last: 0x564d1198da50, diff: 141
+Next frame: 0x564d1198dc8f,  last: 0x564d1198da50, diff: 575
+Next frame: 0x564d1198de0f,  last: 0x564d1198da50, diff: 959
+Next frame: 0x564d1198df8f,  last: 0x564d1198da50, diff: 1343
+Next frame: 0x564d1198e10f,  last: 0x564d1198da50, diff: 1727
+Next frame: 0x564d1198e28f,  last: 0x564d1198da50, diff: 2111

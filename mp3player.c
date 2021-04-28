@@ -8,6 +8,8 @@
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
+#include "http-client.h" // http connection
+
 pa_simple *device = NULL;
 int ret = 1;
 int error;
@@ -19,10 +21,10 @@ void output(struct mad_header const *header, struct mad_pcm *pcm);
 
 int main(int argc, char **argv) {
     // Parse command-line arguments
-    if (argc != 2) {
+   /* if (argc != 2) {
         fprintf(stderr, "Usage: %s [filename.mp3]", argv[0]);
         return 255;
-    }
+    }*/
 
     // Set up PulseAudio 16-bit 44.1kHz stereo output
     static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 48000, .channels = 2 };
@@ -36,7 +38,7 @@ int main(int argc, char **argv) {
     mad_synth_init(&mad_synth);
     mad_frame_init(&mad_frame);
 
-    // Filename pointer
+    /*// Filename pointer
     char *filename = argv[1];
 
     // File pointer
@@ -59,9 +61,33 @@ int main(int argc, char **argv) {
     // Copy pointer and length to mad_stream struct
     mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
 
+	*/
+	
+	
+	
+	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
+	struct chunk chunk = { 0 };
+	
+	unsigned char *last = NULL;
     // Decode frame and synthesize loop
-    while (1) {
-
+    chunk = read_chunk(handle->sock);
+    mad_stream_buffer(&mad_stream, chunk.data, chunk.size);
+    last = mad_stream.this_frame;
+	while (1) {
+		
+		if(mad_stream.this_frame - last >= chunk.size - 384)
+		{
+			free(chunk.data);
+			last = mad_stream.this_frame;
+			printf("Reading from socket\n");
+			
+			chunk = read_chunk(handle->sock);	
+			printf("chunk size: %ld\n", chunk.size);
+			mad_stream_buffer(&mad_stream, chunk.data, chunk.size);
+			
+		}
+		printf("Next frame: %p,  last: %p, diff: %lu\n", mad_stream.next_frame, last, mad_stream.next_frame - last);
+		//printf("count: %d\n", ++count);
         // Decode frame from the stream
         if (mad_frame_decode(&mad_frame, &mad_stream)) {
             if (MAD_RECOVERABLE(mad_stream.error)) {
@@ -78,7 +104,7 @@ int main(int argc, char **argv) {
     }
 
     // Close
-    fclose(fp);
+   // fclose(fp);
 
     // Free MAD structs
     mad_synth_finish(&mad_synth);
