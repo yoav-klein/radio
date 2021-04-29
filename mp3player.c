@@ -40,33 +40,7 @@ int main(int argc, char **argv) {
     mad_synth_init(&mad_synth);
     mad_frame_init(&mad_frame);
 
-    /*// Filename pointer
-    char *filename = argv[1];
-
-    // File pointer
-    FILE *fp = fopen(filename, "r");
-    int fd = fileno(fp);
-
-    // Fetch file size, etc
-    struct stat metadata;
-    if (fstat(fd, &metadata) >= 0) {
-        printf("File size %d bytes\n", (int)metadata.st_size);
-    } else {
-        printf("Failed to stat %s\n", filename);
-        fclose(fp);
-        return 254;
-    }
-
-    // Let kernel do all the dirty job of buffering etc, map file contents to memory
-    char *input_stream = (char*)mmap(0, metadata.st_size, PROT_READ, MAP_SHARED, fd, 0);
-
-    // Copy pointer and length to mad_stream struct
-    mad_stream_buffer(&mad_stream, input_stream, metadata.st_size);
-
-	*/
-	
-	
-	
+		
 	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
 	struct chunk chunk = { 0 };
 	
@@ -76,28 +50,30 @@ int main(int argc, char **argv) {
     fprintf(stderr, "chunk size: %ld\n", chunk.size);
     mad_stream_buffer(&mad_stream, chunk.data, chunk.size);
     
+    fprintf(stderr, "Before loop: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
+    
     while (1) {
 		#define FRAME_SIZE (384)
-		size_t unused = mad_stream.bufend - mad_stream.this_frame;
+		size_t unused = mad_stream.bufend - mad_stream.next_frame;
 		fprintf(stderr, "loop: unused: %lu\n", unused);
-		if(unused <= (FRAME_SIZE * 2))
+		if(unused <= (FRAME_SIZE))
 		{
 			fprintf(stderr, "SMALLER: unused: %lu\n", unused);
-			unsigned char tmp[FRAME_SIZE * 2] = { 0 };
+			unsigned char tmp[FRAME_SIZE] = { 0 };
 			//printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
 			if(unused > 0)
 			{
 				//printf("Copying to tmp: %p\n", mad_stream.this_frame);
-				memcpy(tmp, mad_stream.this_frame, unused);
+				memcpy(tmp, mad_stream.next_frame, unused);
 				
 			//	printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
 			}
-			fprintf(stderr, "last in tmp - tmp[unused]: %x\n", tmp[unused - 1]);
+			//fprintf(stderr, "last in tmp - tmp[unused]: %x\n", tmp[unused - 1]);
 			
 			free(chunk.data);
 			chunk = read_chunk(handle->sock);	
 			chunk.data = realloc(chunk.data, chunk.size + unused);
-			fprintf(stderr, "chunk.data[0]: %x\n", ((unsigned char*)chunk.data)[0]);
+			//fprintf(stderr, "chunk.data[0]: %x\n", ((unsigned char*)chunk.data)[0]);
 			if(NULL == chunk.data)
 			{
 				perror("realloc");
@@ -110,8 +86,9 @@ int main(int argc, char **argv) {
 				
 				memcpy(chunk.data, tmp, unused);
 				//printf("after copy - chunk.data: %x %x %x %x\n", ((unsigned char*)chunk.data)[0], chunk.data[1], chunk.data[2], chunk.data[3]);
+				
 			}
-			fprintf(stderr, "new buffer: chunk.data[unused - 1]: %x, chunk.data[unused]: %x\n", ((unsigned char*)chunk.data)[unused - 1], ((unsigned char*)chunk.data)[unused]);
+			//fprintf(stderr, "new buffer: chunk.data[unused - 1]: %x, chunk.data[unused]: %x\n", ((unsigned char*)chunk.data)[unused - 1], ((unsigned char*)chunk.data)[unused]);
 			mad_stream_buffer(&mad_stream, chunk.data, chunk.size + unused);
 			
 		}
@@ -119,14 +96,20 @@ int main(int argc, char **argv) {
 		//printf("bufend: %p\n", mad_stream.bufend);
         // Decode frame from the stream
         int written_bytes = 0;
+        #ifdef PRINT_STREAM
         while(written_bytes < FRAME_SIZE)
         {
         	written_bytes = write(1, mad_stream.this_frame + written_bytes, FRAME_SIZE - written_bytes);
         }
+        #endif
+        
+        fprintf(stderr, "Before decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         if (mad_frame_decode(&mad_frame, &mad_stream)) {
         	fprintf(stderr, "*********ERROR***********\n");
             fprintf(stderr, "%s\n", mad_stream_errorstr(&mad_stream));
+            fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
             if (MAD_RECOVERABLE(mad_stream.error)) {
+            	
                 continue;
             } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
             	//printf("MAD_ERROR_BUFLEN\n");
@@ -135,6 +118,7 @@ int main(int argc, char **argv) {
                 break;
             }
         }
+        fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         // Synthesize PCM data of frame
         mad_synth_frame(&mad_synth, &mad_frame);
         output(&mad_frame.header, &mad_synth.pcm);
@@ -189,3 +173,5 @@ void output(struct mad_header const *header, struct mad_pcm *pcm) {
         printf("Mono not supported!");
     }
 }
+
+
