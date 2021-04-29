@@ -67,7 +67,8 @@ int main(int argc, char **argv) {
 		printf("loop %lu\n", count++);
         // Decode frame from the stream
         if (mad_frame_decode(&mad_frame, &mad_stream)) {
-        	
+        	printf("*********ERROR***********\n");
+            printf("%s\n", mad_stream_errorstr(&mad_stream));
         	if (MAD_RECOVERABLE(mad_stream.error)) {
                 continue;
             } else if (mad_stream.error == MAD_ERROR_BUFLEN) {
@@ -76,7 +77,7 @@ int main(int argc, char **argv) {
                 break;
             }
         } else {
-        	printf("after decode, current frame: %p, next frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
+        	//printf("after decode, current frame: %p, next frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         }
         // Synthesize PCM data of frame
         mad_synth_frame(&mad_synth, &mad_frame);
