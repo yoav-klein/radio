@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
                 break;
             }
         }
-        fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
+        //fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         // Synthesize PCM data of frame
         mad_synth_frame(&mad_synth, &mad_frame);
         output(&mad_frame.header, &mad_synth.pcm);
