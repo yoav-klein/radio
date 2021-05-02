@@ -1,0 +1,11 @@
+
+1.0
+*****
+
+To improve:
+-----------
+- Currently only working with chunked data. Improve so that will work with regular
+  data also
+- Set sample rate and frame size dynamically, not hard coded.
+
+

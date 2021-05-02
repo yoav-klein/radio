@@ -23,11 +23,12 @@ void output(struct mad_header const *header, struct mad_pcm *pcm);
 
 int main(int argc, char **argv) {
     // Parse command-line arguments
-   /* if (argc != 2) {
-        fprintf(stderr, "Usage: %s [filename.mp3]", argv[0]);
-        return 255;
-    }*/
-
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s URL\n", argv[0]);
+        return 0;
+    }
+	
+	// TODO: set the rate value dynamically, according to the stream
     // Set up PulseAudio 16-bit 44.1kHz stereo output
     static const pa_sample_spec ss = { .format = PA_SAMPLE_S16LE, .rate = 48000, .channels = 2 };
     if (!(device = pa_simple_new(NULL, "MP3 player", PA_STREAM_PLAYBACK, NULL, "playback", &ss, NULL, NULL, &error))) {
@@ -41,61 +42,58 @@ int main(int argc, char **argv) {
     mad_frame_init(&mad_frame);
 
 		
-	struct http_handle *handle = init_connection("https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", NULL);
+	struct http_handle *handle = init_connection(argv[1], NULL);
 	struct chunk chunk = { 0 };
 	
 	unsigned char *last = NULL;
     // Decode frame and synthesize loop
     chunk = read_chunk(handle->sock);
-    fprintf(stderr, "chunk size: %ld\n", chunk.size);
     mad_stream_buffer(&mad_stream, chunk.data, chunk.size);
     
-    fprintf(stderr, "Before loop: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
     
+    // TODO: set frame size dynamically
     while (1) {
 		#define FRAME_SIZE (384)
+		
 		size_t unused = mad_stream.bufend - mad_stream.next_frame;
-		fprintf(stderr, "loop: unused: %lu\n", unused);
+		
+		// if unused < FRAME_SIZE
 		if(unused <= (FRAME_SIZE))
 		{
-			fprintf(stderr, "SMALLER: unused: %lu\n", unused);
+			#ifdef DEBUG
+			fprintf(stderr, "unused < FRAME_SIZE, unused: %lu, reading again\n", unused);
+			#endif 
+			
 			unsigned char tmp[FRAME_SIZE] = { 0 };
-			//printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
 			if(unused > 0)
 			{
-				//printf("Copying to tmp: %p\n", mad_stream.this_frame);
-				memcpy(tmp, mad_stream.next_frame, unused);
-				
-			//	printf("tmp: %x %x %x %x\n", tmp[0], tmp[1], tmp[2], tmp[3]);
+				memcpy(tmp, mad_stream.next_frame, unused);	
 			}
-			//fprintf(stderr, "last in tmp - tmp[unused]: %x\n", tmp[unused - 1]);
 			
 			free(chunk.data);
-			chunk = read_chunk(handle->sock);	
+			chunk = read_chunk(handle->sock);
+			
+			// in case unused > 0, allocate space for both unused and new data	
 			chunk.data = realloc(chunk.data, chunk.size + unused);
-			//fprintf(stderr, "chunk.data[0]: %x\n", ((unsigned char*)chunk.data)[0]);
+			
 			if(NULL == chunk.data)
 			{
 				perror("realloc");
+				
+				exit(1);
 			}
 			
 			if(unused > 0)
 			{
-				//printf("before move - chunk.data: %x %x %x %X\n", chunk.data[0], chunk.data[1], chunk.data[2], chunk.data[3]);
 				memmove(chunk.data + unused, chunk.data, chunk.size);
-				
 				memcpy(chunk.data, tmp, unused);
-				//printf("after copy - chunk.data: %x %x %x %x\n", ((unsigned char*)chunk.data)[0], chunk.data[1], chunk.data[2], chunk.data[3]);
-				
 			}
-			//fprintf(stderr, "new buffer: chunk.data[unused - 1]: %x, chunk.data[unused]: %x\n", ((unsigned char*)chunk.data)[unused - 1], ((unsigned char*)chunk.data)[unused]);
 			mad_stream_buffer(&mad_stream, chunk.data, chunk.size + unused);
 			
 		}
-		//printf("this_frame: %p\n", mad_stream.this_frame);
-		//printf("bufend: %p\n", mad_stream.bufend);
-        // Decode frame from the stream
+		
         int written_bytes = 0;
+        
         #ifdef PRINT_STREAM
         while(written_bytes < FRAME_SIZE)
         {
@@ -103,11 +101,8 @@ int main(int argc, char **argv) {
         }
         #endif
         
-        fprintf(stderr, "Before decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         if (mad_frame_decode(&mad_frame, &mad_stream)) {
-        	fprintf(stderr, "*********ERROR***********\n");
-            fprintf(stderr, "%s\n", mad_stream_errorstr(&mad_stream));
-            fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
+        	  fprintf(stderr, "%s\n", mad_stream_errorstr(&mad_stream));
             if (MAD_RECOVERABLE(mad_stream.error)) {
             	
                 continue;
@@ -118,7 +113,6 @@ int main(int argc, char **argv) {
                 break;
             }
         }
-        //fprintf(stderr, "After decode: this_frame: %p, next_frame: %p\n", mad_stream.this_frame, mad_stream.next_frame);
         // Synthesize PCM data of frame
         mad_synth_frame(&mad_synth, &mad_frame);
         output(&mad_frame.header, &mad_synth.pcm);

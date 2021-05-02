@@ -1,4 +1,18 @@
 
+
+#########
+#
+#	Debug:
+#		$ make CC_DEF=DEBUG
+#	
+#	Print MP3 stream:
+#		$ make CC_DEF=PRINT_STREAM
+#
+#	Regular:
+#		$ make CC_DEF=foo
+#
+#########
+
 CC=gcc
 CXX=g++
 INCLUDE=http-client/include
@@ -8,7 +22,7 @@ all: http-client mp3player.out parse.out
 
 mp3player.out: mp3player.c
 	$(CC) -g -I$(INCLUDE) $^ -D$(CC_DEF) $(HTTP-OBJS)   -lmad -lpulse -lpulse-simple -o $@
-	
+
 mp3fileplayer.out: mp3fileplayer.c
 	$(CC) -g -I$(INCLUDE) $^ $(HTTP-OBJS) -lmad -lpulse -lpulse-simple -o $@
 
