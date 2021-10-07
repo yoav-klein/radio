@@ -24,7 +24,7 @@ mp3player.out: mp3player.c
 	$(CC) -g -I$(INCLUDE) $^ -D$(CC_DEF) $(HTTP-OBJS)   -lmad -lpulse -lpulse-simple -o $@
 
 mp3fileplayer.out: mp3fileplayer.c
-	$(CC) -g -I$(INCLUDE) $^ $(HTTP-OBJS) -lmad -lpulse -lpulse-simple -o $@
+	$(CC) -g -I$(INCLUDE) $^  -lmad -lpulse -lpulse-simple -o $@
 
 .PHONY: http-client
 
